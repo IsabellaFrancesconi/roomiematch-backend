@@ -73,3 +73,9 @@ if __name__ == '__main__':
 
 
     app.run(debug=True)
+
+# Delete users method to be edited 
+@app.route('/delete_user', methods=['DELETE'])
+def delete_user():
+    # Placeholder Logic 
+    return jsonify({"message": "DELETE endpoint is ready, but not implemented yet."}), 200
