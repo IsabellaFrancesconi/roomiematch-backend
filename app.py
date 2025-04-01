@@ -75,11 +75,35 @@ def user():
 
     return jsonify(user_data)
 
+@app.route('/accept')
+def accept():
+    user_id = int(request.args.get('user'))
+    roommate_id = int(request.args.get('roommate'))
+
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO user_accepted VALUES(?, ?)", (user_id, roommate_id))
+    conn.commit()
+
+    return 'success', 200
+
+@app.route('/reject')
+def reject():
+    user_id = int(request.args.get('user'))
+    roommate_id = int(request.args.get('roommate'))
+
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO user_rejections VALUES(?, ?)", (user_id, roommate_id))
+    conn.commit()
+
+    return 'success', 200
+
 if __name__ == '__main__':
     app.run(debug=True)
 
 # Delete users method to be edited 
-@app.route('/delete_user', methods=['DELETE'])
-def delete_user():
+@app.route('/delete', methods=['DELETE'])
+def delete():
     # Placeholder Logic 
     return jsonify({"message": "DELETE endpoint is ready, but not implemented yet."}), 200
