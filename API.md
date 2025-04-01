@@ -13,7 +13,13 @@
 - `/user` retrieves data for a user
     - usage: `GET` with a user id parameter
     - returns: associated user data
+- `/delete` deletes a user
+    - usage: `DEL` with a user id parameter
+- `/accept` accepts a roommate match
+    - usage: `POST` with a user id and a roommate id
+- `/reject` rejects a roommate match
+    - usage: `POST` with a user id and a roommate id
 
 ## potential future API
 
-- replace, update, and/or delete users
+- replace and/or update users
