@@ -1,4 +1,4 @@
-# Main Flask App placeholders 
+# Main Flask App  
 import sqlite3
 import flask
 from flask import Flask, request, jsonify
@@ -47,17 +47,27 @@ def create_user():
         )""", user_data)
         user_id = cursor.lastrowid
 
-        # TODO insert user hobbies into the `user_hobbies` table
+        # TODO insert user hobbies into the `user_hobbies` table (done for now, but review)
+        # Insert hobbies into user_hobbies table
+        if 'hobbies' in user_data:
+            for hobby in user_data['hobbies']:
+                # Get the hobbyID from the hobbies table
+                cursor.execute("SELECT hobbyID FROM hobbies WHERE hobby = ?", (hobby,))
+                hobby_id = cursor.fetchone()
+                if hobby_id:
+                    # Insert the user-hobby pair into the user_hobbies table
+                    cursor.execute("INSERT INTO user_hobbies (userID, hobbyID) VALUES (?, ?)", (user_id, hobby_id[0]))
 
-        conn.commit()
+        conn.commit() # Commit changes to db 
+
     except sqlite3.IntegrityError as e:
-        conn.rollback()
+        conn.rollback() # Rollback if there's an error 
         raise e
 
     return jsonify({ "user": user_id })
 
 # needs to call match_roommates function in match.py 
-@app.route('/get_matches')
+@app.route('/get_matches', methods=['GET'])
 def get_matches():
     user_id = int(request.args.get("user"))
 
@@ -66,7 +76,7 @@ def get_matches():
 
     return jsonify(matches)
 
-@app.route('/user')
+@app.route('/user', methods=['GET'])
 def user():
     user_id = int(request.args.get("user"))
 
@@ -75,35 +85,49 @@ def user():
 
     return jsonify(user_data)
 
-@app.route('/accept')
+@app.route('/accept', methods=['POST'])
 def accept():
     user_id = int(request.args.get('user'))
     roommate_id = int(request.args.get('roommate'))
 
     conn = get_db()
     cursor = conn.cursor()
+    # Insert user into accepted table 
     cursor.execute("INSERT INTO user_accepted VALUES(?, ?)", (user_id, roommate_id))
     conn.commit()
 
-    return 'success', 200
+    # Optional: update user status to indicate a matched user?
+    # cursor.execute("UPDATE roommate_profiles SET status = 'Matched' WHERE userID = ?", (user_id,))
+    return jsonify({"message": "Roommie Match accepted!"}), 200
 
-@app.route('/reject')
+@app.route('/reject', methods=['POST'])
 def reject():
     user_id = int(request.args.get('user'))
     roommate_id = int(request.args.get('roommate'))
 
     conn = get_db()
     cursor = conn.cursor()
+    # Insert user into rejections table
     cursor.execute("INSERT INTO user_rejections VALUES(?, ?)", (user_id, roommate_id))
     conn.commit()
-
-    return 'success', 200
+    return jsonify({"message": "Match rejected. "}), 200
 
 if __name__ == '__main__':
     app.run(debug=True)
 
-# Delete users method to be edited 
+# Delete a user from any table (handles cascading deletes) 
 @app.route('/delete', methods=['DELETE'])
 def delete():
-    # Placeholder Logic 
-    return jsonify({"message": "DELETE endpoint is ready, but not implemented yet."}), 200
+    user_id = int(request.args.get('user'))
+    conn = get_db()
+    cursor = conn.cursor()
+
+    # Delete from roommate_profiles, user_accepted, user_rejections, user_hobbies, etc.
+    cursor.execute("DELETE FROM user_accepted WHERE userID = ? OR acceptedUserID = ?", (user_id, user_id))
+    cursor.execute("DELETE FROM user_rejections WHERE userID = ? OR rejectedUserID = ?", (user_id, user_id))
+    cursor.execute("DELETE FROM user_hobbies WHERE userID = ?", (user_id,))
+    cursor.execute("DELETE FROM roommate_profiles WHERE userID = ?", (user_id,))
+    conn.commit()
+
+    return jsonify({"message": "User deleted successfully."}), 200
+
