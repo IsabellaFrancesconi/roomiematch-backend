@@ -128,7 +128,7 @@ def get_score(cursor, user_id1, user_id2):
 
     return score
 
-# Basic matching roommate algorithm
+# OUR MATCHING ALGORITHM 
 def get_matches(cursor, user_id, count=10):
     # 1. get the top 'count' users, with a score greater than zero
     user_scores = []
@@ -147,6 +147,6 @@ def get_matches(cursor, user_id, count=10):
 
     # 2. if there are less than top 'count' users, use content filtering system
 
-    # TODO implement this
+    # TODO add content-based filtering rec system code! in get_matches
 
     return user_scores
