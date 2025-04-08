@@ -19,7 +19,3 @@
     - usage: `POST` with a user id and a roommate id
 - `/reject` rejects a roommate match
     - usage: `POST` with a user id and a roommate id
-
-## potential future API
-
-- replace and/or update users
