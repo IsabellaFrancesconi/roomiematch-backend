@@ -3,10 +3,14 @@ import sqlite3
 import flask
 from flask import Flask, request, jsonify
 import match
+from flask_cors import CORS
 
 DATABASE_PATH = 'roomie_match.db'
 
 app = Flask(__name__)
+
+# Allow requests from frontend URL 
+CORS(app, origins="https://roomiehopie.vercel.app") 
 
 def get_db():
     db = getattr(flask, '_database', None)
