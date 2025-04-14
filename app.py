@@ -1,4 +1,5 @@
 # Main Flask App  
+# Run in local testing mode: flask --app app --debug run
 import os
 import sys
 import sqlite3
