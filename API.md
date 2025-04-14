@@ -19,3 +19,5 @@
     - usage: `POST` with a user id and a roommate id
 - `/reject` rejects a roommate match
     - usage: `POST` with a user id and a roommate id
+- `/get_mutuals` retrieves the list of mutually accepted matches for a user
+    - usage: `GET` with a user id
