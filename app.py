@@ -109,6 +109,9 @@ def user():
     cursor = get_db().cursor()
     user_data = match.get_user(cursor, user_id)
 
+    hobbies = match.get_user_hobbies()
+    user_data['hobbies'] = list(hobbies)
+
     return jsonify(user_data)
 
 @app.route('/accept', methods=['POST'])
