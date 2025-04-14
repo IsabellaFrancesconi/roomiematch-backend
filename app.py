@@ -1,12 +1,25 @@
 # Main Flask App  
 import os
+import sys
 import sqlite3
 import flask
 from flask import Flask, request, jsonify
 import match
 from flask_cors import CORS
 
-DATABASE_PATH = 'roomie_match.db'
+DATABASE_PATH = 'roomie_match.db' if os.getenv('FLASK_DEBUG') else '/home/site/wwwroot/roomie_match.db'
+
+# create the database if it doesn't exist
+# (this is important for production deployment on azure)
+if not os.path.exists(DATABASE_PATH):
+    conn = sqlite3.connect(DATABASE_PATH)
+    cursor = conn.cursor()
+
+    with open("CreateDB.SQL") as f:
+        cursor.executescript(f.read())
+
+    conn.commit()
+    conn.close()
 
 app = Flask(__name__)
 
@@ -158,16 +171,4 @@ def get_mutuals():
     return jsonify(results)
 
 if __name__ == '__main__':
-    # create the database if it doesn't exist
-    # (this is important for production deployment on azure)
-    if not os.path.exists(DATABASE_PATH):
-        conn = sqlite3.connect(DATABASE_PATH)
-        cursor = conn.cursor()
-
-        with open("CreateDB.SQL") as f:
-            cursor.executescript(f.read())
-
-        conn.commit()
-        conn.close()
-
     app.run()
