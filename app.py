@@ -105,15 +105,26 @@ def get_matches():
 
 @app.route('/user', methods=['GET'])
 def user():
+    # Check if the userID parameter is provided in the request
     user_id = int(request.args.get("user"))
-
+    if not user_id:
+        return jsonify({"error": "User ID is required"}), 400
+    try:
+        user_id = int(user_id) # Convert to integer 
+    except ValueError:
+        return jsonify({"error": "Invalid user ID"}), 400
+    
+    # Create cursor and fetch the user data
     cursor = get_db().cursor()
-    user_data = match.get_user(cursor, user_id)
-
-    hobbies = match.get_user_hobbies()
-    user_data['hobbies'] = list(hobbies)
-
-    return jsonify(user_data)
+    try:
+        user_data = match.get_user(cursor, user_id) # Fetch user data from db 
+        # Fetch user hobbies (pass user_id as argument)
+        hobbies = match.get_user_hobbies()
+        user_data['hobbies'] = list(hobbies)
+        return jsonify(user_data)
+    
+    except Exception as e:
+        return jsonify({"error": f"Error fetching user data: {str(e)}"}), 500
 
 @app.route('/accept', methods=['POST'])
 def accept():
