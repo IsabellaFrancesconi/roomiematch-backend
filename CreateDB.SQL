@@ -86,5 +86,3 @@ BEGIN
     VALUES (OLD.userID, OLD.bio, CURRENT_TIMESTAMP);
 END;
 COMMIT;
-
-.save "roomie_match.db"

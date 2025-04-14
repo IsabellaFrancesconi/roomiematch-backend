@@ -1,4 +1,5 @@
 # Main Flask App  
+import os
 import sqlite3
 import flask
 from flask import Flask, request, jsonify
@@ -156,4 +157,16 @@ def get_mutuals():
     return jsonify(results)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # create the database if it doesn't exist
+    # (this is important for production deployment on azure)
+    if not os.path.exists(DATABASE_PATH):
+        conn = sqlite3.connect(DATABASE_PATH)
+        cursor = conn.cursor()
+
+        with open("CreateDB.SQL") as f:
+            cursor.executescript(f.read())
+
+        conn.commit()
+        conn.close()
+
+    app.run()
