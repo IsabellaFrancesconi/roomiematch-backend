@@ -11,7 +11,8 @@ DATABASE_PATH = 'roomie_match.db'
 app = Flask(__name__)
 
 # Allow requests from frontend URL 
-CORS(app, origins="https://roomiehopie.vercel.app") 
+# CORS(app, origins="https://roomiehopie.vercel.app") 
+CORS(app, origins="*")
 
 def get_db():
     db = getattr(flask, '_database', None)
