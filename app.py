@@ -42,7 +42,14 @@ def create_user():
     try:
         # setting userID to none will cause it to automatically be filled in by the database
         user_data['userID'] = None
-        cursor.execute("""INSERT INTO roommate_profiles VALUES (
+        # allow this to be automatic too
+        cursor.execute("""INSERT INTO roommate_profiles(
+                userID,
+                firstname, lastname, case_email, gender, gender_preference, housing, year, major, major_preference,
+                clean, noise, sleep, greeklife, guests, language, cook, smoke, against_smoker, drink, against_drinker,
+                pets, against_pet, politics, politics_preference, religion,
+                religion_preference, bio, top_1, top_2, top_3, profile_pic
+            ) VALUES (
             :userID,
             :firstname, :lastname, :case_email, :gender, :gender_preference, :housing, :year, :major, :major_preference,
             :clean, :noise, :sleep, :greeklife, :guests, :language, :cook, :smoke, :against_smoker, :drink, :against_drinker,
