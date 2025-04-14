@@ -116,9 +116,6 @@ def reject():
     conn.commit()
     return jsonify({"message": "Match rejected. "}), 200
 
-if __name__ == '__main__':
-    app.run(debug=True)
-
 # Delete a user from any table (handles cascading deletes) 
 @app.route('/delete', methods=['DELETE'])
 def delete():
@@ -135,3 +132,21 @@ def delete():
 
     return jsonify({"message": "User deleted successfully."}), 200
 
+@app.route('/get_mutuals', methods=['GET'])
+def get_mutuals():
+    user_id = int(request.args.get("user"))
+    cursor = get_db().cursor()
+
+    query = """SELECT u2.userID
+               FROM user_accepted r1
+               INNER JOIN user_accepted r2 ON r1.acceptedUserID = r2.userID
+               INNER JOIN roommate_profiles u2 ON r2.userID = u2.userID
+               WHERE r1.userID = ? AND r2.acceptedUserID = ?"""
+
+    cursor.execute(query, (user_id, user_id))
+    results = [row[0] for row in cursor.fetchall()]
+
+    return jsonify(results)
+
+if __name__ == '__main__':
+    app.run(debug=True)
