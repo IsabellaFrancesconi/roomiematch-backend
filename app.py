@@ -119,7 +119,7 @@ def user():
     try:
         user_data = match.get_user(cursor, user_id) # Fetch user data from db 
         # Fetch user hobbies (pass user_id as argument)
-        hobbies = match.get_user_hobbies()
+        hobbies = match.get_user_hobbies(cursor, user_id) # Pass cursor and user_id
         user_data['hobbies'] = list(hobbies)
         return jsonify(user_data)
     
