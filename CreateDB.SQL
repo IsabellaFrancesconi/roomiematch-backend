@@ -3,15 +3,23 @@ CREATE TABLE IF NOT EXISTS "bio_history" (
 	"bioID"	INTEGER,
 	"userID"	INTEGER NOT NULL,
 	"old_bio"	TEXT NOT NULL,
-	"updated_at"	NUMERIC DEFAULT (strftime('%s', 'now')),
+	"updated_at"	NUMERIC NOT NULL DEFAULT (strftime('%s', 'now')),
 	PRIMARY KEY("bioID" AUTOINCREMENT),
 	FOREIGN KEY("userID") REFERENCES "roommate_profiles"("userID")
 );
+DROP TABLE IF EXISTS hobbies;
 CREATE TABLE IF NOT EXISTS "hobbies" (
-	"hobbyID"	,
-	"hobby"	TEXT NOT NULL CHECK("hobby" IN ('Sports', 'Music', 'Gaming', 'Cooking', 'Reading', 'Traveling')) UNIQUE,
-	PRIMARY KEY("hobbyID")
+	hobbyID INTEGER PRIMARY KEY AUTOINCREMENT,
+	"hobby"	TEXT NOT NULL CHECK("hobby" IN ('Sports', 'Music', 'Gaming', 'Cooking', 'Reading', 'Traveling')) UNIQUE
 );
+INSERT INTO hobbies (hobby) VALUES
+('Sports'),
+('Music'),
+('Gaming'),
+('Cooking'),
+('Reading'),
+('Traveling');
+
 CREATE TABLE IF NOT EXISTS "roommate_profiles" (
 	"userID"	INTEGER,
 	"firstname"	TEXT NOT NULL,
@@ -45,6 +53,7 @@ CREATE TABLE IF NOT EXISTS "roommate_profiles" (
 	"top_2"	TEXT NOT NULL CHECK("top_2" IN ('clean', 'noise', 'sleep', 'guests', 'cook', 'major preference', 'religion preference', 'politics preference', 'greeklife', 'hobbies')),
 	"top_3"	TEXT NOT NULL CHECK("top_3" IN ('clean', 'noise', 'sleep', 'guests', 'cook', 'major preference', 'religion preference', 'politics preference', 'greeklife', 'hobbies')),
 	"profile_pic"	TEXT NOT NULL,
+	"submission_timestamp"	TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY("userID" AUTOINCREMENT)
 );
 CREATE TABLE IF NOT EXISTS "user_accepted" (
@@ -66,13 +75,8 @@ CREATE TABLE IF NOT EXISTS "user_rejections" (
 	FOREIGN KEY("rejectedUserID") REFERENCES "roommate_profiles"("userID") ON DELETE CASCADE,
 	FOREIGN KEY("userID") REFERENCES "roommate_profiles"("userID") ON DELETE CASCADE
 );
-INSERT INTO "hobbies" VALUES (1,'Sports');
-INSERT INTO "hobbies" VALUES (2,'Music');
-INSERT INTO "hobbies" VALUES (3,'Gaming');
-INSERT INTO "hobbies" VALUES (4,'Cooking');
-INSERT INTO "hobbies" VALUES (5,'Reading');
-INSERT INTO "hobbies" VALUES (6,'Traveling');
 
+DROP TRIGGER IF EXISTS bio_update_trigger; 
 CREATE TRIGGER bio_update_trigger
 AFTER UPDATE ON roommate_profiles
 FOR EACH ROW
