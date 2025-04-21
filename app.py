@@ -49,7 +49,7 @@ def home():
 
 @app.route('/create_user', methods=['POST'])
 def create_user():
-    user_data = request.json #Input data coming from frontend 
+    user_data = request.json #Input data coming from frontend
 
     conn = get_db()
     cursor = conn.cursor()
@@ -73,8 +73,6 @@ def create_user():
             :religion_preference, :bio, :top_1, :top_2, :top_3, :profile_pic
         )""", user_data)
         user_id = cursor.lastrowid
-
-        # TODO insert user hobbies into the `user_hobbies` table (done for now, but review)
         # Insert hobbies into user_hobbies table
         if 'hobbies' in user_data:
             for hobby in user_data['hobbies']:
