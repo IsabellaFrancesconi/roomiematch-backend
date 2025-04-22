@@ -11,7 +11,7 @@
     - on the frontend, this will be called to find and display potential matches
     - on the backend, this will run the matching algorithm for a user
 - `/user` retrieves data for a user
-    - usage: `GET` with a user id parameter
+    - usage: `GET` with a case_email parameter (e.g., /user?case_email=sofiaherrera@case.edu)
     - returns: associated user data
 - `/delete` deletes a user
     - usage: `DELETE` with a user id parameter
