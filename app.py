@@ -103,18 +103,21 @@ def get_matches():
 
 @app.route('/user', methods=['GET'])
 def user():
-    # Check if the userID parameter is provided in the request
-    user_id = int(request.args.get("user"))
-    if not user_id:
-        return jsonify({"error": "User ID is required"}), 400
-    try:
-        user_id = int(user_id) # Convert to integer 
-    except ValueError:
-        return jsonify({"error": "Invalid user ID"}), 400
+    # Check if the Case email parameter is provided in the request
+    case_email = request.args.get("case_email")
+    if not case_email:
+        return jsonify({"error": "A CWRU Email Address is required"}), 400
     
     # Create cursor and fetch the user data
     cursor = get_db().cursor()
     try:
+        # Fetch the user ID based on the email provided
+        cursor.execute("SELECT userID FROM roommate_profiles WHERE case_email = ?", (case_email,))
+        user_row = cursor.fetchone()
+        if not user_row:
+            return jsonify({"error": "User not found with the provided email"}), 404
+        user_id = user_row[0]  # Get the userID from the query result
+        
         user_data = match.get_user(cursor, user_id) # Fetch user data from db 
         # Fetch user hobbies (pass user_id as argument)
         hobbies = match.get_user_hobbies(cursor, user_id) # Pass cursor and user_id
@@ -131,13 +134,20 @@ def accept():
 
     conn = get_db()
     cursor = conn.cursor()
-    # Insert user into accepted table 
-    cursor.execute("INSERT INTO user_accepted VALUES(?, ?)", (user_id, roommate_id))
-    conn.commit()
+    # Make sure both users exist in db 
+    cursor.execute("SELECT userID FROM roommate_profiles WHERE userID = ? OR userID = ?", (user_id, roommate_id))
+    result = cursor.fetchall()
+    if len(result) != 2:
+        return jsonify({"error": "One or both user IDs do not exist in roommate_profiles."}), 400
 
-    # Optional: update user status to indicate a matched user?
-    # cursor.execute("UPDATE roommate_profiles SET status = 'Matched' WHERE userID = ?", (user_id,))
-    return jsonify({"message": "Roommie Match accepted!"}), 200
+    try:
+        cursor.execute("INSERT INTO user_accepted VALUES(?, ?)", (user_id, roommate_id))
+        conn.commit()
+        return jsonify({"message": "Roommie Match accepted!"}), 200
+    except Exception as e:
+        app.logger.error(f"Error while accepting match: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
 
 @app.route('/reject', methods=['POST'])
 def reject():
