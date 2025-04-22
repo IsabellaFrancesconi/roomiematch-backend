@@ -103,21 +103,18 @@ def get_matches():
 
 @app.route('/user', methods=['GET'])
 def user():
-    # Check if the Case email parameter is provided in the request
-    case_email = request.args.get("case_email")
-    if not case_email:
-        return jsonify({"error": "A CWRU Email Address is required"}), 400
+    # Check if the userID parameter is provided in the request
+    user_id = int(request.args.get("user"))
+    if not user_id:
+        return jsonify({"error": "User ID is required"}), 400
+    try:
+        user_id = int(user_id) # Convert to integer 
+    except ValueError:
+        return jsonify({"error": "Invalid user ID"}), 400
     
     # Create cursor and fetch the user data
     cursor = get_db().cursor()
     try:
-        # Fetch the user ID based on the email provided
-        cursor.execute("SELECT userID FROM roommate_profiles WHERE case_email = ?", (case_email,))
-        user_row = cursor.fetchone()
-        if not user_row:
-            return jsonify({"error": "User not found with the provided email"}), 404
-        user_id = user_row[0]  # Get the userID from the query result
-        
         user_data = match.get_user(cursor, user_id) # Fetch user data from db 
         # Fetch user hobbies (pass user_id as argument)
         hobbies = match.get_user_hobbies(cursor, user_id) # Pass cursor and user_id
