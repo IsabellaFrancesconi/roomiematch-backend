@@ -16,8 +16,8 @@
 - `/delete` deletes a user
     - usage: `DELETE` with a user id parameter
 - `/accept` accepts a roommate match
-    - usage: `POST` with a user id and a roommate id
+    - usage: `POST` with a user id and a roommate id (e.g., /accept?user=id&roommate=anotherid)
 - `/reject` rejects a roommate match
-    - usage: `POST` with a user id and a roommate id
+    - usage: `POST` with a user id and a roommate id (e.g., /reject?user=id&roommate=anotherid)
 - `/get_mutuals` retrieves the list of mutually accepted matches for a user
     - usage: `GET` with a user id
